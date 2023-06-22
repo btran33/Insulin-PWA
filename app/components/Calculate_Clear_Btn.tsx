@@ -50,7 +50,7 @@ const Calculate_Clear_Btn = () => {
                         .bind((days: number) => days / parseFloat(getElement('insulin-dispense').value), 'insulin-dispense')
         
         if (result.value) {
-            getElement('result').textContent = result.value.toString()
+            getElement('result').textContent = Math.ceil(result.value).toString()
             getElement('result-label').setAttribute("class", defaultLabelName + "visible")
         }
     }
