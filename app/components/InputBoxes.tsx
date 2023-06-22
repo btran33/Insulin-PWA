@@ -38,7 +38,7 @@ const InputBoxes = () => {
             {   // map over the box data and create input boxes in column order
                 boxes.map(({id, placeholder, units}) => {
                     return (
-                            <div id={id+'_'} className="grid">
+                            <div key={id+'_'} className="grid">
                                 <input id={id} type="text" placeholder={placeholder} 
                                     className={defaultBoxName} />
 
