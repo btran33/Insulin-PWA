@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { defaultBoxName } from "./InputBoxes";
+import { defaultLabelName } from "./ResultDisplay";
 
 const getElement = (id: string) => {
     return document.getElementById(id) as HTMLInputElement
@@ -42,12 +43,16 @@ const Calculate_Clear_Btn = () => {
         return null;
     }
 
-    // calculation pipeline using bind
+    // calculation pipeline using bind and display value if successful
     const calculate = () => {
         let result = new Maybe(parseFloat(getElement('ttd').value), 'ttd')
                         .bind((ttd: number) => ttd * parseFloat(getElement('days').value), 'days')
                         .bind((days: number) => days / parseFloat(getElement('insulin-dispense').value), 'insulin-dispense')
-        console.log(result)
+        
+        if (result.value) {
+            getElement('result').textContent = result.value.toString()
+            getElement('result-label').setAttribute("class", defaultLabelName + "visible")
+        }
     }
 
     // clear all boxes and results
@@ -58,12 +63,14 @@ const Calculate_Clear_Btn = () => {
             getElement(id).value = ''
             getElement(id)?.setAttribute("class", defaultBoxName)
         });
+        getElement('result').textContent = ''
+        getElement('result-label').setAttribute("class", defaultLabelName + "invisible")
     }
-
+    
     return (
-        <div className="grid grid-flow-col gap-4 fixed left-1/2 -translate-x-2/4 bottom-14">
-            <button className="btn btn-outline" onClick={clear}>Clear</button>
-            <button className="btn btn-outline btn-success" onClick={calculate}>Calculate</button>
+        <div className="grid grid-flow-col justify-center gap-4 sticky bottom-0">
+            <button className="btn btn-outline w-fit" onClick={clear}>Clear</button>
+            <button className="btn btn-outline btn-success w-fit" onClick={calculate}>Calculate</button>
         </div>
     );
 };

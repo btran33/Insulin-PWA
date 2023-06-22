@@ -1,6 +1,7 @@
 import SwitchThemeBtn from "./components/SwitchThemeBtn"
 import InputBoxes from "./components/InputBoxes"
 import Calculate_Clear_Btn from "./components/Calculate_Clear_Btn"
+import ResultDisplay from "./components/ResultDisplay"
 
 export default function Home() {
 
@@ -14,6 +15,8 @@ export default function Home() {
       <SwitchThemeBtn/>
 
       <InputBoxes/>
+
+      <ResultDisplay/>
 
       <Calculate_Clear_Btn/>
 
