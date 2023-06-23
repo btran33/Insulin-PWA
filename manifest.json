@@ -3,6 +3,7 @@
     "short_name": "insulin",
     "description": "A Progressive Web App that facilitate calculation of insulin supply for a patient",
     "start_url": "/",
+    "id": "/",
     "icons": [
         {
           "src": "icons/manifest-icon-192.maskable.png",
