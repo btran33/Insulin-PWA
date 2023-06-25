@@ -2,7 +2,6 @@
 {
     "name": "Insulin PWA",
     "short_name": "insulin-pwa",
-    "scope": "/",
     "start_url": "/",
     "icons": [
         {
