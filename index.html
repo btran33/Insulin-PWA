@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="icons/apple-icon-180.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Insulin Supply Calculator</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="apple-touch-icon" href="icons/apple-icon-180.png" />
+    <meta name="pwa-capable" content="yes" />
+    <meta name="description" content="A Progressive Web App for facilitating calculation of insulin supply for a patient."/>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="src/main.ts"></script>
+
+    <script>
+      // PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js', {
+          scope: '/Insulin-PWA/'
+        });
+      }
+    </script>
+  </body>
+</html>
