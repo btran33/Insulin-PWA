@@ -3,7 +3,8 @@
     import Sun from './btn-icons/Sun.svelte'
     import Moon from './btn-icons/Moon.svelte'
 
-    export let appTheme = writable({'appTheme': localStorage.getItem('appTheme')})
+    let availableTheme = ['light', 'dracula']
+    let appTheme = writable({'appTheme': localStorage.getItem('appTheme')})
 
     // set html and localStorage with current theme
     const applyTheme = () => {
@@ -15,18 +16,18 @@
     applyTheme()
 
     const toggleTheme = () => {
-        ($appTheme.appTheme === 'light' || $appTheme.appTheme === null) ? 
-        appTheme.set({'appTheme' : 'dark'}) :
-        appTheme.set({'appTheme' : 'light'})
+        ($appTheme.appTheme === availableTheme[0] || $appTheme.appTheme === null) ? 
+        appTheme.set({'appTheme' : availableTheme[1]}) :
+        appTheme.set({'appTheme' : availableTheme[0]})
         applyTheme()
     }
-  </script>
+</script>
   
-<div class="grid justify-start my-5 px-5">
+<div >
   <button name="theme" aria-label="switch theme"
     on:click={toggleTheme} class="btn btn-circle">
     
-    {#if $appTheme.appTheme === 'light' || $appTheme.appTheme === null}
+    {#if $appTheme.appTheme === availableTheme[0] || $appTheme.appTheme === null}
         <Sun class="w-5 h-5"/>
     {:else}
         <Moon class="w-5 h-5"/>

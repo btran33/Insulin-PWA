@@ -1,17 +1,13 @@
 <script>
-  import SwitchTheme from './lib/SwitchTheme.svelte';
   import InputBoxes from './lib/InputBoxes.svelte';
   import CalculateClearBtns from './lib/CalculateClearBtns.svelte';
   import ResultDisplay from './lib/ResultDisplay.svelte';
+  import MenuDrawer from './lib/MenuDrawer.svelte';
 </script>
 
 <main class="mx-auto mt-4 max-w-full">
-  <div class="text-center text-3xl font-bold my-5 flex flex-col gap-4">
-    Insulin Supply Calculator
-  </div>
-
-  <SwitchTheme/>
-
+  <MenuDrawer title="Insulin Supply Calculator"/>
+  
   <InputBoxes/>
 
   <ResultDisplay/>

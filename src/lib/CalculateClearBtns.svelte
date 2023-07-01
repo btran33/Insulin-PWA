@@ -7,8 +7,8 @@
     }
     
     /**
-        An abstraction for pipelining the calculation 
-        while checking for error in each box.
+        An monadic abstraction for pipelining the  
+        calculation's error checking in each box
     */
     class Maybe {
         value: number;
