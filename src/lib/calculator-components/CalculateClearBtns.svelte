@@ -36,7 +36,8 @@
     const calculate = () => {
         let result = new Maybe(parseFloat(getElement('ttd').value), 'ttd')
                         .bind((ttd: number) => ttd * parseFloat(getElement('days').value), 'days')
-                        .bind((days: number) => days / parseFloat(getElement('insulin-dispense').value), 'insulin-dispense')
+                        .bind((days: number) => days / parseFloat(getElement('insulin-strength').value), 'insulin-strength')
+                        .bind((strength: number) => strength / parseFloat(getElement('insulin-dispense').value), 'insulin-dispense')
         
         if (result.value) {
             getElement('result').textContent = Math.ceil(result.value).toString()
@@ -45,7 +46,7 @@
     }
 
     const clear = () => {
-        const allBoxesIDs = ['ttd', 'days', 'insulin-dispense']
+        const allBoxesIDs = ['ttd', 'days', 'insulin-strength', 'insulin-dispense']
         allBoxesIDs.map((id) => {
             getElement(id).value = ''
             getElement(id)?.setAttribute("class", defaultBoxClass)

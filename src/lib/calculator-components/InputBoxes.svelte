@@ -3,7 +3,7 @@
         {
             id: 'ttd',
             placeholder: 'Total Daily Dose',
-            units: 'units per day'
+            units: 'units/day'
         },
         {
             id: 'days',
@@ -11,9 +11,14 @@
             units: '30, 60, etc.'
         },
         {
+            id: 'insulin-strength',
+            placeholder: 'Insulin Strength',
+            units: 'u-100, 200, etc'
+        },
+        {
             id: 'insulin-dispense',
-            placeholder: 'Insulin Dispensed',
-            units: 'units/container'
+            placeholder: 'Insulin Amount',
+            units: 'mL/container'
         },
     ]
     export let defaultBoxClass = "input input-bordered input-info input-lg"
