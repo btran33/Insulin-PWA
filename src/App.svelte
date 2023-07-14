@@ -4,8 +4,10 @@
   import type { AuthSession } from '@supabase/supabase-js'
   import { supabase } from "./supabaseClient";
   import SwitchTheme from "./lib/SwitchTheme.svelte";
+    import LoginModal from "./lib/LoginModal.svelte";
   
   let menuWidth = '16rem'
+  let modal_id = 'login_modal'
   let session: AuthSession
 
   onMount(() => {
@@ -35,30 +37,21 @@
 			<div class="signInBox">		
 				Want to save calculations? 
 				<div class="signInLink">
-					<button onclick="login_modal.showModal()">Sign In</button>
+					<button onclick={modal_id+".showModal()"}>Sign In</button>
 				</div>
 			</div>
 		{/if}
 
 		<div class="user-interaction">
 			{#if session}
-				<form action="/logout" method="post" >
-					<button type="submit" class="btn btn-primary">Logout</button>
-				</form>
+				<button class="btn btn-primary" on:click={() => supabase.auth.signOut()}>Logout</button>
+
 			{/if}
 			<SwitchTheme/>
 		</div>
 
     <!-- Modal for login with backdrop -->
-    <dialog id="login_modal" class="modal">
-      <form method="dialog" class="modal-box">
-        <h3 class="font-bold text-lg">Sign In</h3>
-        
-      </form>
-      <form method="dialog" class="modal-backdrop">
-        <button>close</button>
-      </form>
-    </dialog>
+    <LoginModal modal_id={modal_id}/>
 
 	</nav>
 
