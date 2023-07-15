@@ -19,6 +19,10 @@
       session = _session
     })
   })
+
+  const fetch = () => {
+
+  }
 </script>
 
 <main style="--menu-width:{menuWidth}">
@@ -26,10 +30,9 @@
 	<nav id="menu">
 		<div class="history">History</div>
 
-		<!-- TODO: display user's history  -->
 		{#if session}	
 			<ul>
-				{#each Array(20) as _, i}
+				{#each Array(10) as _, i}
 					<li><a href="#">Item {i}</a></li>
 				{/each}
 			</ul>
@@ -44,7 +47,17 @@
 
 		<div class="user-interaction">
 			{#if session}
-				<button class="btn btn-primary" on:click={() => supabase.auth.signOut()}>Logout</button>
+				<div class="dropdown dropdown-top dropdown-hover">
+					<label tabindex="0" class="btn no-animation bg-base-100">
+						{session.user.user_metadata.username}
+					</label>
+					<ul tabindex="0" class="dropdown-content z-[1] menu bg-base-100 w-fit rounded-lg">
+						<li><button class="font-semibold"
+								on:click={() => supabase.auth.signOut()}>
+							LOG OUT
+						</button></li>
+					</ul>
+				</div>
 
 			{/if}
 			<SwitchTheme/>
@@ -126,8 +139,6 @@
 		overflow-x: hidden;
 		overflow-y: scroll;
 		scroll-behavior: smooth;
-		/* border: 2px solid; */
-		
 	}
 	::-webkit-scrollbar {
 		width: 0.4rem;
@@ -220,13 +231,21 @@
 	#menu-switch:checked ~ #menu .history:after {
 		width: 90%;
 		background: hsl(var(--bc));;
-	} 
+	}
 
 	#menu .user-interaction {
-		/* border: 1px solid; */
-		align-self: flex-end;
-		flex-direction: row;
+		display: grid;
+		grid-template-columns: max-content min-content;
+		justify-content: center;
+		gap: 2rem;
+		text-transform: none;
+	}
 
+	#menu .user-interaction li button {
+
+		border: none;
+		margin: 0.5rem;
+		text-transform: capitalize;
 	}
 
 	.signInBox {

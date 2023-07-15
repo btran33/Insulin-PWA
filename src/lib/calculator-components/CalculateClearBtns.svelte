@@ -1,6 +1,21 @@
 <script lang="ts">
     import { defaultBoxClass } from './InputBoxes.svelte'
     import { defaultLabelName } from './ResultDisplay.svelte'
+    import { supabase } from '../../supabaseClient';
+    import type { AuthSession } from '@supabase/supabase-js';
+    import { onMount } from 'svelte';
+
+    let session: AuthSession
+
+    onMount(() => {
+        supabase.auth.getSession().then(({ data }) => {
+            session = data.session
+        })
+
+        supabase.auth.onAuthStateChange((_event, _session) => {
+            session = _session
+        })
+    })
 
     const getElement = (id: string) => {
         return document.getElementById(id) as HTMLInputElement
@@ -34,16 +49,39 @@
 
     // calculation pipeline using bind and display value if successful
     const calculate = () => {
-        let result = new Maybe(parseFloat(getElement('ttd').value), 'ttd')
-                        .bind((ttd: number) => ttd * parseFloat(getElement('days').value), 'days')
-                        .bind((days: number) => days / parseFloat(getElement('insulin-strength').value), 'insulin-strength')
-                        .bind((strength: number) => strength / parseFloat(getElement('insulin-dispense').value), 'insulin-dispense')
-        
+        let ttd = parseFloat(getElement('ttd').value); 
+        let days = parseFloat(getElement('days').value)
+        let strength = parseFloat(getElement('insulin-strength').value)
+        let volume = parseFloat(getElement('insulin-dispense').value)
+
+        let result = new Maybe(ttd, 'ttd')
+                        .bind((ttd: number) => ttd * days, 'days')
+                        .bind((days: number) => days / strength, 'insulin-strength')
+                        .bind((strength: number) => strength / volume, 'insulin-dispense')
+
         if (result.value) {
-            getElement('result').textContent = Math.ceil(result.value).toString()
+            let res = Math.ceil(result.value)
+            getElement('result').textContent = res.toString()
             getElement('result-label').setAttribute("class", defaultLabelName + "visible")
-        }     
+            // insertTable(ttd, days, strength, volume, res)
+        }
     }
+
+    // const insertTable = async (ttd: number, days: number, strength: number, volume: number, result: number) => {
+    //     if (session) {
+    //         const { data, error } = await supabase
+    //             .from('calculations')
+    //             .insert([{
+    //                 ttd: ttd,
+    //                 days: days,
+    //                 strength: strength,
+    //                 volume: volume,
+    //                 result: result
+    //             }])
+    //             .select()
+    //         if (error) throw error
+    //     }
+    // }
 
     const clear = () => {
         const allBoxesIDs = ['ttd', 'days', 'insulin-strength', 'insulin-dispense']
