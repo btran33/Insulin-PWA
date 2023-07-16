@@ -4,7 +4,8 @@
   import type { AuthSession } from '@supabase/supabase-js'
   import { supabase } from "./supabaseClient";
   import SwitchTheme from "./lib/SwitchTheme.svelte";
-    import LoginModal from "./lib/LoginModal.svelte";
+  import LoginModal from "./lib/LoginModal.svelte";
+  import History from "./lib/History.svelte";
   
   let menuWidth = '16rem'
   let modal_id = 'login_modal'
@@ -20,9 +21,6 @@
     })
   })
 
-  const fetch = () => {
-
-  }
 </script>
 
 <main style="--menu-width:{menuWidth}">
@@ -30,12 +28,8 @@
 	<nav id="menu">
 		<div class="history">History</div>
 
-		{#if session}	
-			<ul>
-				{#each Array(10) as _, i}
-					<li><a href="#">Item {i}</a></li>
-				{/each}
-			</ul>
+		{#if session}
+			<History session={session}/>
 		{:else}
 			<div class="signInBox">		
 				Want to save calculations? 
@@ -132,39 +126,6 @@
 		height: 2px;
 		width: 0px;
 		transition: width 0.6s ease, background-color 0.6s ease;
-	}
-
-	#menu ul {
-		padding: 0;
-		overflow-x: hidden;
-		overflow-y: scroll;
-		scroll-behavior: smooth;
-	}
-	::-webkit-scrollbar {
-		width: 0.4rem;
-	}
-	
-	::-webkit-scrollbar-thumb {
-		border-radius: 15px;
-		background: hsl(var(--bc));
-	}
-
-	::-webkit-scrollbar-thumb:hover {
-		background: hsl(var(--ac));
-	}
-
-	#menu ul li a {
-		display: block;
-		font-weight: 700;
-
-		-webkit-transition: all .3s ease-in;
-		   -moz-transition: all .3s ease-in;
-		     -o-transition: all .3s ease-in;
-		        transition: all .3s ease-in;
-		text-decoration: none;
-		text-transform: uppercase;
-		border: 1px solid #a124;
-		margin-top: 1rem;
 	}
 
 	#menu-switch {

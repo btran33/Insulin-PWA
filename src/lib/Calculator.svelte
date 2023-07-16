@@ -3,8 +3,6 @@
     import ResultDisplay from "./calculator-components/ResultDisplay.svelte";
     import CalculateClearBtns from "./calculator-components/CalculateClearBtns.svelte";
 
-
-
 </script>
 
 <main class="mx-auto mt-4 max-w-full">

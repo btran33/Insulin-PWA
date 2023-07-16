@@ -1,5 +1,4 @@
 <script>
-
     import { supabase } from "../supabaseClient";
     import { writable } from "svelte/store";
     import SignUpModal from "./SignUpModal.svelte";

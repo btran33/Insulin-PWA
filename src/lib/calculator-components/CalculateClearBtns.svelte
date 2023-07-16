@@ -63,25 +63,27 @@
             let res = Math.ceil(result.value)
             getElement('result').textContent = res.toString()
             getElement('result-label').setAttribute("class", defaultLabelName + "visible")
-            // insertTable(ttd, days, strength, volume, res)
+            insertTable(ttd, days, strength, volume, res)
         }
     }
 
-    // const insertTable = async (ttd: number, days: number, strength: number, volume: number, result: number) => {
-    //     if (session) {
-    //         const { data, error } = await supabase
-    //             .from('calculations')
-    //             .insert([{
-    //                 ttd: ttd,
-    //                 days: days,
-    //                 strength: strength,
-    //                 volume: volume,
-    //                 result: result
-    //             }])
-    //             .select()
-    //         if (error) throw error
-    //     }
-    // }
+    const insertTable = async (ttd: number, days: number, strength: number, volume: number, result: number) => {
+        if (session) {
+            const { user } = session
+            const { data, error } = await supabase
+                .from('calculations')
+                .insert({
+                    user_id: user.id,
+                    created_at: new Date().toISOString(),
+                    ttd: ttd,
+                    days: days,
+                    strength: strength,
+                    volume: volume,
+                    result: result,
+                })
+            if (error) throw error
+        }
+    }
 
     const clear = () => {
         const allBoxesIDs = ['ttd', 'days', 'insulin-strength', 'insulin-dispense']
