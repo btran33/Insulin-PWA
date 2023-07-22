@@ -1,9 +1,9 @@
 <script lang="ts">
     import { defaultBoxClass } from './InputBoxes.svelte'
-    import { defaultLabelName } from './ResultDisplay.svelte'
     import { supabase } from '../../supabaseClient';
     import type { AuthSession } from '@supabase/supabase-js';
     import { onMount } from 'svelte';
+    import { resValue } from '../stores';
 
     let session: AuthSession
 
@@ -51,19 +51,18 @@
     const calculate = () => {
         let ttd = parseFloat(getElement('ttd').value); 
         let days = parseFloat(getElement('days').value)
-        let strength = parseFloat(getElement('insulin-strength').value)
-        let volume = parseFloat(getElement('insulin-dispense').value)
+        let strength = parseFloat(getElement('strength').value)
+        let volume = parseFloat(getElement('volume').value)
 
         let result = new Maybe(ttd, 'ttd')
                         .bind((ttd: number) => ttd * days, 'days')
-                        .bind((days: number) => days / strength, 'insulin-strength')
-                        .bind((strength: number) => strength / volume, 'insulin-dispense')
+                        .bind((days: number) => days / strength, 'strength')
+                        .bind((strength: number) => strength / volume, 'volume')
 
         if (result.value) {
             let res = Math.ceil(result.value)
-            getElement('result').textContent = res.toString()
-            getElement('result-label').setAttribute("class", defaultLabelName + "visible")
-            insertTable(ttd, days, strength, volume, res)
+            resValue.set(res.toString())
+            // insertTable(ttd, days, strength, volume, res)
         }
     }
 
@@ -86,13 +85,12 @@
     }
 
     const clear = () => {
-        const allBoxesIDs = ['ttd', 'days', 'insulin-strength', 'insulin-dispense']
+        const allBoxesIDs = ['ttd', 'days', 'strength', 'volume']
         allBoxesIDs.map((id) => {
             getElement(id).value = ''
             getElement(id)?.setAttribute("class", defaultBoxClass)
         });
-        getElement('result').textContent = ''
-        getElement('result-label').setAttribute("class", defaultLabelName + "invisible")
+        resValue.set('')
     }
 </script>
 

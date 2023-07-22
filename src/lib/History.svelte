@@ -2,6 +2,8 @@
     import type { AuthSession } from "@supabase/supabase-js";
     import { supabase } from "../supabaseClient";
     import { onMount } from "svelte";
+    import { resValue } from "./stores";
+    import { get } from "svelte/store";
 
     export let session : AuthSession
     let history = []
@@ -23,9 +25,15 @@
                 .eq('user_id', user.id)
 
             if (error) throw error
-            if (data) {
-                history = data
-            }
+            // if there is history, sort in descending creation time
+            if (data) history = data.sort(function(a, b) {
+                var keyA = new Date(a.created_at), keyB = new Date(b.created_at)
+                if (keyA < keyB) return 1
+                if (keyA > keyB) return -1
+                return 0
+            });
+            console.log(history)
+
         } catch (error) {
             if (error instanceof Error) {
                 alert(error.message)
@@ -35,13 +43,28 @@
         }
     }
 
+    const onHistoryClick = (index: number) => {
+        const ids = ['ttd', 'days', 'strength', 'volume']
+        for(const id of ids) {
+            getElement(id).value = history[index][id]
+        }
+        resValue.set(history[index].result)
+    }
+
+    const getElement = (id: string) => {
+        return document.getElementById(id) as HTMLInputElement
+    }
+
 </script>
 
 <ul>
     {#each history as row, i}
-        <li><a href="#"> {row}</a></li>
+        <li><button class="btn w-full" on:click={() => onHistoryClick(i)}>
+            {row}
+
+        </button></li>
     {/each}
-    <span id="login_loading" class={loading ? 'loading' : ''}></span>
+    <span id="history_loading" class={loading ? 'loading' : ''}></span>
 </ul>
 
 <style>
@@ -65,7 +88,7 @@
 		background: hsl(var(--ac));
 	}
 
-    ul li a {
+    /* ul li a {
 		display: block;
 		font-weight: 700;
 
@@ -76,5 +99,5 @@
 		text-decoration: none;
 		text-transform: uppercase;
 		margin-top: 1rem;
-	}
+	} */
 </style>

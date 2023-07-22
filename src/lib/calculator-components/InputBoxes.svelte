@@ -11,12 +11,12 @@
             units: '30, 60, etc.'
         },
         {
-            id: 'insulin-strength',
+            id: 'strength',
             placeholder: 'Insulin Strength',
             units: 'u-100, 200, etc'
         },
         {
-            id: 'insulin-dispense',
+            id: 'volume',
             placeholder: 'Insulin Amount',
             units: 'mL/container'
         },
