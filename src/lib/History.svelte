@@ -3,10 +3,11 @@
     import { supabase } from "../supabaseClient";
     import { onMount } from "svelte";
     import { resValue } from "./stores";
-    import { get } from "svelte/store";
+    import Trash from "./btn-icons/Trash.svelte";
 
     export let session : AuthSession
     let history = []
+    let historyDates = []
     let loading = false
 
     onMount(() => {
@@ -25,13 +26,20 @@
                 .eq('user_id', user.id)
 
             if (error) throw error
-            // if there is history, sort in descending creation time
-            if (data) history = data.sort(function(a, b) {
+            if (data) {
+                // if there is history, sort in descending creation time
+                history = data.sort(function(a, b) {
                 var keyA = new Date(a.created_at), keyB = new Date(b.created_at)
                 if (keyA < keyB) return 1
-                if (keyA > keyB) return -1
-                return 0
-            });
+                    if (keyA > keyB) return -1
+                    return 0
+                })
+
+                historyDates = history.map((entry) => {
+                    return new Date(entry.created_at)
+                })
+            } 
+
             console.log(history)
 
         } catch (error) {
@@ -51,21 +59,49 @@
         resValue.set(history[index].result)
     }
 
+    const onDeleteHistory = (date: Date) => {
+        deleteHistory(date)
+        fetchHistory()
+    }
+
+    const deleteHistory = async (date: Date) => {
+        if (session) {
+            const { user } = session
+            const { data, error } = await supabase
+                .from('calculations')
+                .delete()
+                .eq('created_at', date.toISOString())
+                .eq('user_id', user.id)
+
+            if (error) throw error
+        }
+    }
+
     const getElement = (id: string) => {
         return document.getElementById(id) as HTMLInputElement
     }
 
 </script>
 
-<ul>
-    {#each history as row, i}
-        <li><button class="btn w-full" on:click={() => onHistoryClick(i)}>
-            {row}
-
-        </button></li>
-    {/each}
+<div>
     <span id="history_loading" class={loading ? 'loading' : ''}></span>
-</ul>
+    <ul class="space-y-2">
+        {#each historyDates as row, i}
+            <ul class="menu menu-horizontal text-lg mt-5">
+                <li><a on:click={()=> onHistoryClick(i)}>
+                    {`${row.getMonth() + 1}-${row.getDate()}: ${
+                        row.toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true})
+                        }`
+                    }
+                </a></li>
+    
+                <li><a class="h-full content-center" on:click={() => onDeleteHistory(row)}>
+                    <Trash size={'18'}/>
+                </a></li>
+            </ul>
+        {/each}
+    </ul>
+</div>
 
 <style>
     ul {
