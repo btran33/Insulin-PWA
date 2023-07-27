@@ -4,6 +4,8 @@
     import { onMount } from "svelte";
     import { resValue } from "./stores";
     import Trash from "./btn-icons/Trash.svelte";
+    import { ttd, days, strength, volume } from "./stores";
+
 
     export let session : AuthSession
     let history = []
@@ -40,7 +42,7 @@
                 })
             } 
 
-            console.log(history)
+            // console.log(history)
 
         } catch (error) {
             if (error instanceof Error) {
@@ -52,11 +54,16 @@
     }
 
     const onHistoryClick = (index: number) => {
-        const ids = ['ttd', 'days', 'strength', 'volume']
-        for(const id of ids) {
-            getElement(id).value = history[index][id]
+        const inputs = [
+            {'ttd': ttd}, 
+            {'days': days}, 
+            {'strength': strength}, 
+            {'volume': volume}, 
+            {'result' : resValue}
+        ]
+        for(const input of inputs) {
+            Object.values(input)[0].set(history[index][Object.keys(input)[0]])
         }
-        resValue.set(history[index].result)
     }
 
     const onDeleteHistory = (date: Date) => {
@@ -76,11 +83,6 @@
             if (error) throw error
         }
     }
-
-    const getElement = (id: string) => {
-        return document.getElementById(id) as HTMLInputElement
-    }
-
 </script>
 
 <div>

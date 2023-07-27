@@ -13,5 +13,4 @@
     <ResultDisplay/>
   
     <CalculateClearBtns/>
-  
 </main>

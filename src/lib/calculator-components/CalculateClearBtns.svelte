@@ -1,11 +1,16 @@
 <script lang="ts">
-    import { defaultBoxClass } from './InputBoxes.svelte'
     import { supabase } from '../../supabaseClient';
     import type { AuthSession } from '@supabase/supabase-js';
     import { onMount } from 'svelte';
-    import { resValue } from '../stores';
+    import { ttd, days, strength, volume, resValue, defaultBoxClass } from "../stores";
 
     let session: AuthSession
+    
+    const calculations = supabase.channel('on_insert')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'calculations' }, payload => {
+            console.log('Insert received: ', payload)
+        })
+        .subscribe()
 
     onMount(() => {
         supabase.auth.getSession().then(({ data }) => {
@@ -34,7 +39,9 @@
             this.id = id
 
             //  change its box id to error box if NaN was given to initialize, otherwise keep it default
-            getElement(this.id)?.setAttribute("class", defaultBoxClass + (!this.value ? ' input-error' : ''))
+            getElement(this.id)?.setAttribute("class", 
+                defaultBoxClass + (!this.value ? ' input-error' : '')
+            )
         }
 
         // bind the function to the current Maybe's inner value and return a new instance of Maybe
@@ -49,20 +56,20 @@
 
     // calculation pipeline using bind and display value if successful
     const calculate = () => {
-        let ttd = parseFloat(getElement('ttd').value); 
-        let days = parseFloat(getElement('days').value)
-        let strength = parseFloat(getElement('strength').value)
-        let volume = parseFloat(getElement('volume').value)
+        let ttd_ = parseFloat($ttd)
+        let days_ = parseFloat($days)
+        let strength_ = parseFloat($strength)
+        let volume_ = parseFloat($volume)
 
-        let result = new Maybe(ttd, 'ttd')
-                        .bind((ttd: number) => ttd * days, 'days')
-                        .bind((days: number) => days / strength, 'strength')
-                        .bind((strength: number) => strength / volume, 'volume')
+        let result = new Maybe(ttd_, 'ttd')
+                        .bind((ttd: number) => ttd * days_, 'days')
+                        .bind((days: number) => days / strength_, 'strength')
+                        .bind((strength: number) => strength / volume_, 'volume')
 
         if (result.value) {
             let res = Math.ceil(result.value)
             resValue.set(res.toString())
-            // insertTable(ttd, days, strength, volume, res)
+            // insertTable(ttd_, days_, strength_, volume_, res)
         }
     }
 
@@ -85,11 +92,16 @@
     }
 
     const clear = () => {
-        const allBoxesIDs = ['ttd', 'days', 'strength', 'volume']
-        allBoxesIDs.map((id) => {
-            getElement(id).value = ''
-            getElement(id)?.setAttribute("class", defaultBoxClass)
-        });
+        const inputs = [
+            {'ttd': ttd}, 
+            {'days': days}, 
+            {'strength': strength}, 
+            {'volume': volume}, 
+        ]
+        for(const input of inputs) {
+            Object.values(input)[0].set('')
+            getElement(Object.keys(input)[0]).setAttribute('class', defaultBoxClass)
+        }
         resValue.set('')
     }
 </script>
