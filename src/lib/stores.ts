@@ -6,4 +6,5 @@ export const strength = writable('');
 export const volume = writable('');
 export const resValue = writable('');
 
-export const defaultBoxClass = 'input input-bordered input-info input-lg'
+export let defaultBoxClass = "input input-bordered input-info input-lg"
+export let isSaving = writable(true)

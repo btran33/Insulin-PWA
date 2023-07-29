@@ -6,6 +6,7 @@
   import SwitchTheme from "./lib/SwitchTheme.svelte";
   import LoginModal from "./lib/LoginModal.svelte";
   import History from "./lib/History.svelte";
+  import { isSaving } from "./lib/stores";
   
   let menuWidth = '16rem'
   let modal_id = 'login_modal'
@@ -46,10 +47,21 @@
 						{session.user.user_metadata.username}
 					</label>
 					<ul tabindex="0" class="dropdown-content z-[1] menu bg-base-100 w-fit rounded-lg">
-						<li><button class="font-semibold"
+						<li>
+							<button class="font-semibold"
 								on:click={() => supabase.auth.signOut()}>
 							LOG OUT
-						</button></li>
+							</button>
+						</li>
+						<li>	
+							<div class="form-control">
+								<label class="label cursor-pointer gap-2 grid grid-cols-2">
+								  <span class="label-text font-semibold">SAVE</span> 
+								  <input type="checkbox" class="checkbox" 
+								  		 checked={$isSaving} on:click={() => $isSaving = !$isSaving}/>
+								</label>
+							</div>
+						</li>
 					</ul>
 				</div>
 
@@ -61,8 +73,8 @@
     <LoginModal modal_id={modal_id}/>
 
 	</nav>
-
-  <div class="page-wrap">
+	
+	<div class="page-wrap">
 		<label for="menu-switch" id="menu-toggle"/>
 		<Calculator/>
 

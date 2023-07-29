@@ -2,15 +2,10 @@
     import { supabase } from '../../supabaseClient';
     import type { AuthSession } from '@supabase/supabase-js';
     import { onMount } from 'svelte';
-    import { ttd, days, strength, volume, resValue, defaultBoxClass } from "../stores";
+    import { ttd, days, strength, volume, resValue, defaultBoxClass, isSaving } from "../stores";
+    import { get } from 'svelte/store';
 
     let session: AuthSession
-    
-    const calculations = supabase.channel('on_insert')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'calculations' }, payload => {
-            console.log('Insert received: ', payload)
-        })
-        .subscribe()
 
     onMount(() => {
         supabase.auth.getSession().then(({ data }) => {
@@ -69,7 +64,7 @@
         if (result.value) {
             let res = Math.ceil(result.value)
             resValue.set(res.toString())
-            // insertTable(ttd_, days_, strength_, volume_, res)
+            if (get(isSaving)) insertTable(ttd_, days_, strength_, volume_, res)
         }
     }
 
@@ -108,5 +103,14 @@
 
 <div class="grid grid-flow-col justify-center gap-4 sticky bottom-0">
     <button class="btn btn-outline w-fit" on:click={clear}>Clear</button>
-    <button class="btn btn-outline btn-success w-fit" on:click={calculate}>Calculate</button>
+    <div>
+        <button class="btn btn-outline btn-success w-fit" on:click={calculate}>Calculate</button>
+        {#if $isSaving && session}
+            <span class="label-text grid justify-center">and Save</span> 
+        {/if}
+    </div>
 </div>
+
+<style>
+
+</style>

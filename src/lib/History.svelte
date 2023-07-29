@@ -4,13 +4,33 @@
     import { onMount } from "svelte";
     import { resValue } from "./stores";
     import Trash from "./btn-icons/Trash.svelte";
-    import { ttd, days, strength, volume } from "./stores";
+    import { ttd, days, strength, volume, defaultBoxClass } from "./stores";
 
 
     export let session : AuthSession
+    let { user } = session
     let history = []
     let historyDates = []
     let loading = false
+
+    const supabaseChannel = supabase.channel('on_insert_delete')
+        .on('postgres_changes', { 
+                event: 'INSERT', 
+                schema: 'public', 
+                table: 'calculations',
+                filter: `user_id=eq.${user.id}`
+            }, payload => {
+                fetchHistory()
+            })
+        .on('postgres_changes', { 
+                event: 'DELETE', 
+                schema: 'public', 
+                table: 'calculations',
+                filter: `user_id=eq.${user.id}`
+            }, payload => {
+                fetchHistory()
+            })
+    supabaseChannel.subscribe()
 
     onMount(() => {
         fetchHistory()
@@ -42,8 +62,6 @@
                 })
             } 
 
-            // console.log(history)
-
         } catch (error) {
             if (error instanceof Error) {
                 alert(error.message)
@@ -59,16 +77,12 @@
             {'days': days}, 
             {'strength': strength}, 
             {'volume': volume}, 
-            {'result' : resValue}
         ]
         for(const input of inputs) {
             Object.values(input)[0].set(history[index][Object.keys(input)[0]])
+            document.getElementById(Object.keys(input)[0]).setAttribute('class', defaultBoxClass)
         }
-    }
-
-    const onDeleteHistory = (date: Date) => {
-        deleteHistory(date)
-        fetchHistory()
+        resValue.set(history[index]['result'])
     }
 
     const deleteHistory = async (date: Date) => {
@@ -87,9 +101,9 @@
 
 <div>
     <span id="history_loading" class={loading ? 'loading' : ''}></span>
-    <ul class="space-y-2">
+    <div class="history-list">
         {#each historyDates as row, i}
-            <ul class="menu menu-horizontal text-lg mt-5">
+            <ul class="menu menu-horizontal text-lg mt-3">
                 <li><a on:click={()=> onHistoryClick(i)}>
                     {`${row.getMonth() + 1}-${row.getDate()}: ${
                         row.toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true})
@@ -97,20 +111,27 @@
                     }
                 </a></li>
     
-                <li><a class="h-full content-center" on:click={() => onDeleteHistory(row)}>
+                <li><a class="h-full content-center" on:click={() => deleteHistory(row)}>
                     <Trash size={'18'}/>
                 </a></li>
             </ul>
         {/each}
-    </ul>
+    </div>
 </div>
 
 <style>
+    .history-list {
+        position: relative;
+        padding: 0;
+		overflow-x: hidden;
+		overflow-y: auto;
+		scroll-behavior: smooth;
+        max-height: 100%;
+        border: 1px solid;
+    }
+
     ul {
 		padding: 0;
-		overflow-x: hidden;
-		overflow-y: scroll;
-		scroll-behavior: smooth;
 	}
 
     ::-webkit-scrollbar {
