@@ -4,7 +4,7 @@
     import { onMount } from "svelte";
     import { resValue } from "./stores";
     import Trash from "./btn-icons/Trash.svelte";
-    import { ttd, days, strength, volume, defaultBoxClass } from "./stores";
+    import { ttd, days, strength, volume, defaultBoxClass, historyFocus } from "./stores";
 
 
     export let session : AuthSession
@@ -13,6 +13,7 @@
     let historyDates = []
     let loading = false
 
+    // channel to listen for insert/delete changes on the auth user
     const supabaseChannel = supabase.channel('on_insert_delete')
         .on('postgres_changes', { 
                 event: 'INSERT', 
@@ -83,6 +84,8 @@
             document.getElementById(Object.keys(input)[0]).setAttribute('class', defaultBoxClass)
         }
         resValue.set(history[index]['result'])
+
+        $historyFocus.id = index
     }
 
     const deleteHistory = async (date: Date) => {
@@ -99,20 +102,22 @@
     }
 </script>
 
-<div>
+<div class="history-list">
     <span id="history_loading" class={loading ? 'loading' : ''}></span>
-    <div class="history-list">
+    <div>
         {#each historyDates as row, i}
-            <ul class="menu menu-horizontal text-lg mt-3">
-                <li><a on:click={()=> onHistoryClick(i)}>
-                    {`${row.getMonth() + 1}-${row.getDate()}: ${
+            <ul class="menu menu-horizontal text-lg mt-3 ">
+                <li><a on:click={()=> onHistoryClick(i)} 
+                        id={'history_'+i}
+                        class={$historyFocus.id == i ? 'active' : ''}>
+                    {`${
+                        ('0' + (row.getMonth() + 1)).slice(-2)}-${('0' + row.getDate()).slice(-2)}: ${
                         row.toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true})
-                        }`
-                    }
+                    }`}
                 </a></li>
     
                 <li><a class="h-full content-center" on:click={() => deleteHistory(row)}>
-                    <Trash size={'18'}/>
+                    <Trash size={'20'}/>
                 </a></li>
             </ul>
         {/each}
@@ -121,13 +126,11 @@
 
 <style>
     .history-list {
-        position: relative;
         padding: 0;
 		overflow-x: hidden;
-		overflow-y: auto;
+		overflow-y: scroll;
 		scroll-behavior: smooth;
         max-height: 100%;
-        border: 1px solid;
     }
 
     ul {

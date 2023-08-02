@@ -34,7 +34,7 @@
                     password: password_signup, 
                     options: {
                         data: {
-                            username: username
+                            name: username
                         }
                     }
                 })

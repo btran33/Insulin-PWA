@@ -43,8 +43,8 @@
 		<div class="user-interaction">
 			{#if session}
 				<div class="dropdown dropdown-top dropdown-hover">
-					<label tabindex="0" class="btn no-animation bg-base-100">
-						{session.user.user_metadata.username}
+					<label tabindex="0" class="btn no-animation bg-base-100 max-w-md overflow-x-hidden">
+						{session.user.user_metadata.username || session.user.user_metadata.name}
 					</label>
 					<ul tabindex="0" class="dropdown-content z-[1] menu bg-base-100 w-fit rounded-lg">
 						<li>

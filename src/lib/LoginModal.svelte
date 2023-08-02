@@ -29,6 +29,14 @@
             isError = false
         }
     }
+
+    const googleLogin = async () => {
+        const { data, error} = await supabase.auth.signInWithOAuth({
+            provider: 'google'
+        })
+        if (error) throw error
+        window.location.replace(data.url)
+    }
 </script>
 
 <div>
@@ -63,6 +71,12 @@
                 Continue
                 <span id="login_loading" class={loading ? 'loading' : ''}></span>
             </button>
+
+            <div>
+                <button class="btn h-fit w-fit"  type="button" disabled={loading} on:click={async () => googleLogin()}>
+                    <img alt="google icon" src="icons/google.svg"/>
+                </button>
+            </div>
         </form>
     
         <form method="dialog" class="modal-backdrop">
@@ -91,4 +105,9 @@
 		width: 100%;
 		background: hsl(var(--bc));;
 	}
+
+    img {
+        width: 2.5rem;
+        height: auto;
+    }
 </style>

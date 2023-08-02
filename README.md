@@ -41,15 +41,32 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
--- -- Set up Storage!
--- insert into storage.buckets (id, name)
---   values ('avatars', 'avatars');
+-- Create a table for public calculations
+create table calculations (
+  id uuid on delete cascade not null primary key,
+  user_id references auth.users not null,
+  created_at timestamp with time zone,
+  ttd float8,
+  days float8,
+  strength float8,
+  volume float8, 
+  result float8
+);
 
--- -- Set up access controls for storage.
--- -- See https://supabase.com/docs/guides/storage#policy-examples for more details.
--- create policy "Avatar images are publicly accessible." on storage.objects
---   for select using (bucket_id = 'avatars');
+-- Set up Row Level Security (RLS) for calculations
+-- See https://supabase.com/docs/guides/auth/row-level-security for more details.
+alter table calculations
+  enable row level security;
 
--- create policy "Anyone can upload an avatar." on storage.objects
---   for insert with check (bucket_id = 'avatars');
-~~~~
+create policy "Enable insert for authenticated users only (<=20 inserts/user)" on calculations
+  for insert 
+  to authenticated with check ((
+    SELECT count(*) AS count
+    FROM calculations calculations_1
+    WHERE (auth.uid() = calculations_1.user_id)) < 20);
+
+create policy "Enable select for users based on user_id" on calculations
+  for select with check (auth.uid() = id);
+
+create policy "Enable delete for users based on user_id" on calculations
+  for delete using (auth.uid() = id);

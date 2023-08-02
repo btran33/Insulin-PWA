@@ -2,7 +2,7 @@
     import { supabase } from '../../supabaseClient';
     import type { AuthSession } from '@supabase/supabase-js';
     import { onMount } from 'svelte';
-    import { ttd, days, strength, volume, resValue, defaultBoxClass, isSaving } from "../stores";
+    import { ttd, days, strength, volume, resValue, defaultBoxClass, isSaving, historyFocus } from "../stores";
     import { get } from 'svelte/store';
 
     let session: AuthSession
@@ -50,7 +50,7 @@
     }
 
     // calculation pipeline using bind and display value if successful
-    const calculate = () => {
+    const calculate = async () => {
         let ttd_ = parseFloat($ttd)
         let days_ = parseFloat($days)
         let strength_ = parseFloat($strength)
@@ -64,7 +64,14 @@
         if (result.value) {
             let res = Math.ceil(result.value)
             resValue.set(res.toString())
-            if (get(isSaving)) insertTable(ttd_, days_, strength_, volume_, res)
+            if (get(isSaving)) {
+                const { error } = await insertTable(ttd_, days_, strength_, volume_, res)
+                if (error) {
+                    alert('No more than 20 saved calculations can be made. Please delete some and try again...')
+                    return
+                }
+                $historyFocus.id = 0
+            }
         }
     }
 
@@ -82,7 +89,7 @@
                     volume: volume,
                     result: result,
                 })
-            if (error) throw error
+            return {data, error}
         }
     }
 
@@ -98,6 +105,7 @@
             getElement(Object.keys(input)[0]).setAttribute('class', defaultBoxClass)
         }
         resValue.set('')
+        $historyFocus.id = -1
     }
 </script>
 
