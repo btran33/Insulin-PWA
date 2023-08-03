@@ -1,21 +1,23 @@
 const GHPATH = 'https://btran33.github.io/Insulin-PWA';
 const APP_PREFIX = 'insulin_pwa';
 const VERSION = ':version_0.2.0';
+const DEBUG = false
 const URLS = [
   `${GHPATH}/`,
   `${GHPATH}/index.html`
 ];
 
+
 const CACHE_NAME = APP_PREFIX + VERSION;
 self.addEventListener('fetch', function (e) {
-  console.log('Fetch request : ' + e.request.url);
+  if (DEBUG) console.log('Fetch request : ' + e.request.url);
   e.respondWith(
     caches.match(e.request).then(function (request) {
       if (request) {
-        console.log('Responding with cache : ' + e.request.url);
+        if (DEBUG) console.log('Responding with cache : ' + e.request.url);
         return request;
       } else {
-        console.log('File is not cached, fetching : ' + e.request.url);
+        if (DEBUG) console.log('File is not cached, fetching : ' + e.request.url);
         return fetch(e.request);
       }
     })
@@ -25,7 +27,7 @@ self.addEventListener('fetch', function (e) {
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
-      console.log('Installing cache : ' + CACHE_NAME);
+      if (DEBUG) console.log('Installing cache : ' + CACHE_NAME);
       return cache.addAll(URLS);
     })
   );
@@ -41,7 +43,7 @@ self.addEventListener('activate', function (e) {
       return Promise.all(
         keyList.map(function (key, i) {
           if (cacheWhitelist.indexOf(key) === -1) {
-            console.log('Deleting cache : ' + keyList[i]);
+            if (DEBUG) console.log('Deleting cache : ' + keyList[i]);
             return caches.delete(keyList[i]);
           }
         })
