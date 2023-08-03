@@ -84,7 +84,6 @@
             document.getElementById(Object.keys(input)[0]).setAttribute('class', defaultBoxClass)
         }
         resValue.set(history[index]['result'])
-
         $historyFocus.id = index
     }
 
@@ -109,14 +108,17 @@
             <ul class="menu menu-horizontal text-lg mt-3 ">
                 <li><a on:click={()=> onHistoryClick(i)} 
                         id={'history_'+i}
-                        class={$historyFocus.id == i ? 'active' : ''}>
+                        class={$historyFocus.id == i ? 'focus' : ''}
+                        href='#' role='button'>
                     {`${
                         ('0' + (row.getMonth() + 1)).slice(-2)}-${('0' + row.getDate()).slice(-2)}: ${
                         row.toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true})
                     }`}
                 </a></li>
     
-                <li><a class="h-full content-center" on:click={() => deleteHistory(row)}>
+                <li><a class="h-full content-center" 
+                        on:click={() => deleteHistory(row)}
+                        href='#' role='button'>
                     <Trash size={'20'}/>
                 </a></li>
             </ul>

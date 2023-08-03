@@ -64,13 +64,9 @@
         if (result.value) {
             let res = Math.ceil(result.value)
             resValue.set(res.toString())
-            if (get(isSaving)) {
-                const { error } = await insertTable(ttd_, days_, strength_, volume_, res)
-                if (error) {
-                    alert('No more than 20 saved calculations can be made. Please delete some and try again...')
-                    return
-                }
-                $historyFocus.id = 0
+
+            if (session && get(isSaving)) {
+                insertTable(ttd_, days_, strength_, volume_, res)
             }
         }
     }
@@ -89,7 +85,12 @@
                     volume: volume,
                     result: result,
                 })
-            return {data, error}
+                
+            if (error) {
+                alert('No more than 20 saved calculations can be made. Please delete some before saving again.')
+                return
+            }
+            $historyFocus.id = 0
         }
     }
 

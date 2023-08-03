@@ -32,10 +32,15 @@
 
     const googleLogin = async () => {
         const { data, error} = await supabase.auth.signInWithOAuth({
-            provider: 'google'
+            provider: 'google',
+            options: {
+                redirectTo: window.location.href
+            }
         })
-        if (error) throw error
-        window.location.replace(data.url)
+        if (error) {
+            window.location.reload()
+            throw error
+        }
     }
 </script>
 
@@ -74,7 +79,7 @@
 
             <div>
                 <button class="btn h-fit w-fit"  type="button" disabled={loading} on:click={async () => googleLogin()}>
-                    <img alt="google icon" src="icons/google.svg"/>
+                    <img alt="google icon" src="assets/icons/google.svg" width="100%" height="100%"/>
                 </button>
             </div>
         </form>
